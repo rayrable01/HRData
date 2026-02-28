@@ -1,0 +1,17 @@
+venv/
+env/
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+data/
+*.csv
+*.xlsx
+*.parquet
+*.pkl
+models/
+.vscode/
+.idea/
+.DS_Store
+.env
+*.log
