@@ -28,7 +28,7 @@ precision_shortlist = df['test_required'].value_counts(normalize=True).get(True,
 # ---------------------------
 # 4. Recall (proxy: вакансии с ≥1 ключевым навыком / все вакансии)
 # ---------------------------
-recall = (df['count_key_skills'] > 0).sum() / len(df) * 100
+recall = (df['count_key_skills'] > 4).sum() / len(df) * 100
 
 # ---------------------------
 # 5. Время обработки (нагрузка на HR, proxy через среднее количество ключевых навыков)
