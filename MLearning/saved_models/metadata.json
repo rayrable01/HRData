@@ -1,0 +1,355 @@
+{
+  "feature_names": [
+    "exp_score",
+    "hard_score",
+    "quest_score",
+    "auth_score",
+    "red_flags_score",
+    "avail_score",
+    "add_value_score",
+    "experience_level",
+    "education",
+    "n_skills",
+    "years_experience",
+    "has_portfolio",
+    "has_certifications",
+    "expected_salary",
+    "notice_period_days",
+    "position_applied"
+  ],
+  "label_encoders": {
+    "position_applied": [
+      "Backend Developer",
+      "Data Analyst",
+      "Data Scientist",
+      "DevOps Engineer",
+      "Frontend Developer",
+      "ML Engineer",
+      "Product Manager",
+      "QA Engineer"
+    ],
+    "experience_level": [
+      "Junior",
+      "Lead",
+      "Middle",
+      "Senior"
+    ],
+    "education": [
+      "Bachelor",
+      "Master",
+      "No degree",
+      "PhD"
+    ]
+  },
+  "model_results": {
+    "neural_ranking_mlp": {
+      "precision": 0.7648809523809523,
+      "recall": 0.8509933774834437,
+      "f1": 0.8056426332288401,
+      "auc_roc": 0.5995742667928098,
+      "ndcg@10": 0.9026130472623272
+    },
+    "catboost_classification": {
+      "precision": 0.7648648648648648,
+      "recall": 0.9370860927152318,
+      "f1": 0.8422619047619048,
+      "auc_roc": 0.6219421543451819,
+      "ndcg@10": 0.9193811985221566
+    },
+    "pairwise_ranking_lr": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "auc_roc": 1.0,
+      "ndcg@10": 0.795643904291842
+    }
+  },
+  "cv_results": {
+    "catboost_clf": {
+      "mean": 0.8527479712054251,
+      "std": 0.004361977741805214
+    },
+    "xgboost_clf": {
+      "mean": 0.8501526388681393,
+      "std": 0.014383968540295227
+    },
+    "lightgbm_clf": {
+      "mean": 0.8521960560992792,
+      "std": 0.005321162763670975
+    }
+  },
+  "top30": [
+    {
+      "rank": 1,
+      "candidate_id": "CAND_0821",
+      "position_applied": 2,
+      "experience_level": 1,
+      "final_score": 88.98,
+      "model_score": 0.9908263983928469,
+      "is_hired": 1
+    },
+    {
+      "rank": 2,
+      "candidate_id": "CAND_0475",
+      "position_applied": 0,
+      "experience_level": 3,
+      "final_score": 89.89,
+      "model_score": 0.9905894829282913,
+      "is_hired": 1
+    },
+    {
+      "rank": 3,
+      "candidate_id": "CAND_1938",
+      "position_applied": 6,
+      "experience_level": 1,
+      "final_score": 92.8,
+      "model_score": 0.9900702827704566,
+      "is_hired": 1
+    },
+    {
+      "rank": 4,
+      "candidate_id": "CAND_0688",
+      "position_applied": 3,
+      "experience_level": 3,
+      "final_score": 89.69,
+      "model_score": 0.9899165708676448,
+      "is_hired": 1
+    },
+    {
+      "rank": 5,
+      "candidate_id": "CAND_0169",
+      "position_applied": 0,
+      "experience_level": 3,
+      "final_score": 86.75,
+      "model_score": 0.9898417508198096,
+      "is_hired": 1
+    },
+    {
+      "rank": 6,
+      "candidate_id": "CAND_1967",
+      "position_applied": 1,
+      "experience_level": 1,
+      "final_score": 84.71,
+      "model_score": 0.9888688872065263,
+      "is_hired": 1
+    },
+    {
+      "rank": 7,
+      "candidate_id": "CAND_1799",
+      "position_applied": 0,
+      "experience_level": 1,
+      "final_score": 88.2,
+      "model_score": 0.9886694750431309,
+      "is_hired": 1
+    },
+    {
+      "rank": 8,
+      "candidate_id": "CAND_1590",
+      "position_applied": 7,
+      "experience_level": 1,
+      "final_score": 90.63,
+      "model_score": 0.9886250704759536,
+      "is_hired": 1
+    },
+    {
+      "rank": 9,
+      "candidate_id": "CAND_1674",
+      "position_applied": 7,
+      "experience_level": 1,
+      "final_score": 83.68,
+      "model_score": 0.9882458637611939,
+      "is_hired": 1
+    },
+    {
+      "rank": 10,
+      "candidate_id": "CAND_1135",
+      "position_applied": 0,
+      "experience_level": 3,
+      "final_score": 90.74,
+      "model_score": 0.9881612650704057,
+      "is_hired": 1
+    },
+    {
+      "rank": 11,
+      "candidate_id": "CAND_1332",
+      "position_applied": 1,
+      "experience_level": 3,
+      "final_score": 88.25,
+      "model_score": 0.9881212500964529,
+      "is_hired": 1
+    },
+    {
+      "rank": 12,
+      "candidate_id": "CAND_0745",
+      "position_applied": 6,
+      "experience_level": 2,
+      "final_score": 79.11,
+      "model_score": 0.987733032260204,
+      "is_hired": 1
+    },
+    {
+      "rank": 13,
+      "candidate_id": "CAND_1642",
+      "position_applied": 6,
+      "experience_level": 1,
+      "final_score": 91.35,
+      "model_score": 0.9876465638474116,
+      "is_hired": 1
+    },
+    {
+      "rank": 14,
+      "candidate_id": "CAND_1653",
+      "position_applied": 7,
+      "experience_level": 3,
+      "final_score": 90.86,
+      "model_score": 0.9874917810310481,
+      "is_hired": 1
+    },
+    {
+      "rank": 15,
+      "candidate_id": "CAND_0390",
+      "position_applied": 4,
+      "experience_level": 1,
+      "final_score": 90.46,
+      "model_score": 0.9874559090362575,
+      "is_hired": 1
+    },
+    {
+      "rank": 16,
+      "candidate_id": "CAND_1299",
+      "position_applied": 1,
+      "experience_level": 3,
+      "final_score": 88.85,
+      "model_score": 0.9868563616581649,
+      "is_hired": 1
+    },
+    {
+      "rank": 17,
+      "candidate_id": "CAND_0113",
+      "position_applied": 1,
+      "experience_level": 3,
+      "final_score": 83.0,
+      "model_score": 0.9864203449743596,
+      "is_hired": 1
+    },
+    {
+      "rank": 18,
+      "candidate_id": "CAND_0466",
+      "position_applied": 3,
+      "experience_level": 1,
+      "final_score": 85.03,
+      "model_score": 0.9864005898786918,
+      "is_hired": 1
+    },
+    {
+      "rank": 19,
+      "candidate_id": "CAND_0451",
+      "position_applied": 4,
+      "experience_level": 1,
+      "final_score": 77.05,
+      "model_score": 0.9861391555172535,
+      "is_hired": 1
+    },
+    {
+      "rank": 20,
+      "candidate_id": "CAND_1202",
+      "position_applied": 2,
+      "experience_level": 3,
+      "final_score": 77.24,
+      "model_score": 0.9856276866453013,
+      "is_hired": 1
+    },
+    {
+      "rank": 21,
+      "candidate_id": "CAND_0259",
+      "position_applied": 6,
+      "experience_level": 3,
+      "final_score": 89.34,
+      "model_score": 0.9855973717491813,
+      "is_hired": 1
+    },
+    {
+      "rank": 22,
+      "candidate_id": "CAND_1488",
+      "position_applied": 5,
+      "experience_level": 3,
+      "final_score": 93.32,
+      "model_score": 0.9850884086748728,
+      "is_hired": 1
+    },
+    {
+      "rank": 23,
+      "candidate_id": "CAND_1015",
+      "position_applied": 2,
+      "experience_level": 1,
+      "final_score": 91.35,
+      "model_score": 0.9842200425175126,
+      "is_hired": 1
+    },
+    {
+      "rank": 24,
+      "candidate_id": "CAND_0454",
+      "position_applied": 7,
+      "experience_level": 3,
+      "final_score": 93.27,
+      "model_score": 0.9840448244071159,
+      "is_hired": 1
+    },
+    {
+      "rank": 25,
+      "candidate_id": "CAND_1811",
+      "position_applied": 0,
+      "experience_level": 3,
+      "final_score": 88.24,
+      "model_score": 0.9837816476350965,
+      "is_hired": 1
+    },
+    {
+      "rank": 26,
+      "candidate_id": "CAND_0997",
+      "position_applied": 6,
+      "experience_level": 1,
+      "final_score": 84.78,
+      "model_score": 0.9832423221271016,
+      "is_hired": 1
+    },
+    {
+      "rank": 27,
+      "candidate_id": "CAND_0069",
+      "position_applied": 0,
+      "experience_level": 1,
+      "final_score": 88.87,
+      "model_score": 0.9829853201164909,
+      "is_hired": 1
+    },
+    {
+      "rank": 28,
+      "candidate_id": "CAND_0673",
+      "position_applied": 2,
+      "experience_level": 1,
+      "final_score": 81.28,
+      "model_score": 0.9827517283519948,
+      "is_hired": 1
+    },
+    {
+      "rank": 29,
+      "candidate_id": "CAND_1793",
+      "position_applied": 2,
+      "experience_level": 3,
+      "final_score": 85.61,
+      "model_score": 0.9822574361205104,
+      "is_hired": 1
+    },
+    {
+      "rank": 30,
+      "candidate_id": "CAND_1020",
+      "position_applied": 6,
+      "experience_level": 3,
+      "final_score": 81.45,
+      "model_score": 0.9822536317277449,
+      "is_hired": 1
+    }
+  ],
+  "saved_at": "2026-04-05T17:21:30.457595"
+}
