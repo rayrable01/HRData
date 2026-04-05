@@ -88,6 +88,7 @@
     <p><strong>Как работает:</strong> Берёт двоих кандидатов и отвечает: «кто лучше?» Не оценивает по отдельности — только сравнение пар.</p>
     <p><strong>Аналогия:</strong> Турнир по теннису. Не нужен абсолютный рейтинг — важно, кто кого побеждает.</p>
     <p><strong>Задача:</strong> Learning to Rank — ранжирование через попарные сравнения.</p>
+    <p><strong>⚠️ Важно:</strong> Pairwise отлично сравнивает пары (Accuracy = 100%), но плохо строит общий рейтинг из 2000 человек. Поэтому его метрики Precision/Recall/F1 = 1.000 относятся только к pairwise-задаче, а не к ранжированию.</p>
   </div>
 </div>
 
@@ -100,6 +101,10 @@
 <!-- SECTION 5: Результаты -->
 <div class="card">
   <h2>5. Результаты моделей</h2>
+
+  <h3>5a. Метрики классификации (предсказание is_hired)</h3>
+  <p><em>Эти метрики показывают, насколько точно модель предсказывает, нанят кандидат или нет.</em></p>
+  <p><strong>⚠️ Pairwise LR:</strong> его метрики 1.000 относятся к задаче сравнения <strong>пар</strong> кандидатов, а не к предсказанию найма. Pairwise не предсказывает is_hired напрямую.</p>
   <table>
     <tr>
       <th>Метрика</th>
@@ -111,39 +116,67 @@
       <td><strong>Precision</strong></td>
       <td>0.765</td>
       <td class="winner">0.765</td>
-      <td>1.000</td>
+      <td>1.000 <span style="color:#999;font-size:0.8em">(на парах)</span></td>
     </tr>
     <tr>
       <td><strong>Recall</strong></td>
       <td>0.851</td>
       <td class="winner">0.937</td>
-      <td>1.000</td>
+      <td>1.000 <span style="color:#999;font-size:0.8em">(на парах)</span></td>
     </tr>
     <tr>
       <td><strong>F1-Score</strong></td>
       <td>0.806</td>
       <td class="winner">0.842</td>
-      <td>1.000</td>
+      <td>1.000 <span style="color:#999;font-size:0.8em">(на парах)</span></td>
     </tr>
     <tr>
       <td><strong>AUC-ROC</strong></td>
       <td>0.600</td>
       <td class="winner">0.622</td>
-      <td>1.000</td>
+      <td>1.000 <span style="color:#999;font-size:0.8em">(на парах)</span></td>
     </tr>
+  </table>
+
+  <h3>5b. Метрики ранжирования (качество топ-списка) — <span style="color:#2ECC71">главное!</span></h3>
+  <p><em>Эти метрики показывают, насколько правильно модель расставляет кандидатов по местам. Это то, что реально нужно для найма.</em></p>
+  <table>
     <tr>
-      <td><strong>NDCG@30</strong></td>
+      <th>Метрика</th>
+      <th>Neural MLP</th>
+      <th class="winner">CatBoost ⭐</th>
+      <th>Pairwise LR</th>
+    </tr>
+    <tr class="winner">
+      <td><strong>NDCG@30</strong><br><span style="font-size:0.8em;color:#666">Качество ранжирования (1.0 = идеально)</span></td>
       <td>0.903</td>
-      <td class="winner">0.919</td>
+      <td class="winner"><strong>0.919</strong></td>
       <td>0.796</td>
     </tr>
     <tr>
-      <td><strong>Spearman vs формула</strong></td>
+      <td><strong>Spearman vs формула</strong><br><span style="font-size:0.8em;color:#666">Согласие с экспертной оценкой</span></td>
       <td>0.516</td>
-      <td class="winner">0.628</td>
+      <td class="winner"><strong>0.628</strong></td>
       <td>0.628</td>
     </tr>
+    <tr>
+      <td><strong>Uplift @ K=100</strong><br><span style="font-size:0.8em;color:#666">Насколько лучше формулы</span></td>
+      <td>+3.2%</td>
+      <td class="winner"><strong>+4.2%</strong></td>
+      <td>+4.2%</td>
+    </tr>
+    <tr>
+      <td><strong>Overlap с baseline @ K=30</strong><br><span style="font-size:0.8em;color:#666">Совпадение с формулой</span></td>
+      <td>27%</td>
+      <td class="winner"><strong>33%</strong></td>
+      <td>33%</td>
+    </tr>
   </table>
+
+  <div style="background:#FFF3CD; border-left:4px solid #F39C12; padding:15px; border-radius:0 8px 8px 0; margin-top:15px;">
+    <strong>⚠️ Почему Pairwise = 1.000, но CatBoost лучше?</strong><br>
+    Pairwise показывает 1.000 <strong>только на своей задаче</strong> — сравнение двоих кандидатов. Это как сказать «из двух футболистов я всегда выберу лучшего». Но когда просят составить рейтинг всех 2000 игроков — Pairwise справляется хуже всех (NDCG@30 = 0.796). CatBoost же сразу строит качественный рейтинг (NDCG@30 = 0.919).
+  </div>
 </div>
 
 <!-- SECTION 6: CV -->

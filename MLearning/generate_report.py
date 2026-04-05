@@ -102,16 +102,11 @@ def plot_pipeline_architecture():
 # ===================================================================
 
 def plot_model_radar(model_results):
-    models_display = {
-        "neural_ranking_mlp": "Neural MLP",
-        "catboost_classification": "CatBoost",
-        "pairwise_ranking_lr": "Pairwise LR",
-    }
-
+    # Радар только для MLP и CatBoost — Pairwise не включаем,
+    # его метрики 1.000 относятся к pairwise-задаче, а не к ранжированию
     metrics_map = {
-        "neural_ranking_mlp": {"precision": 0.765, "recall": 0.851, "f1": 0.806, "auc_roc": 0.600, "ndcg@10": 0.903},
-        "catboost_classification": {"precision": 0.765, "recall": 0.937, "f1": 0.842, "auc_roc": 0.622, "ndcg@10": 0.919},
-        "pairwise_ranking_lr": {"precision": 1.000, "recall": 1.000, "f1": 1.000, "auc_roc": 1.000, "ndcg@10": 0.796},
+        "Neural MLP": {"precision": 0.765, "recall": 0.851, "f1": 0.806, "auc_roc": 0.600, "ndcg@10": 0.903},
+        "CatBoost": {"precision": 0.765, "recall": 0.937, "f1": 0.842, "auc_roc": 0.622, "ndcg@10": 0.919},
     }
 
     categories = ["Precision", "Recall", "F1", "AUC-ROC", "NDCG@10"]
@@ -121,13 +116,13 @@ def plot_model_radar(model_results):
 
     fig, ax = plt.subplots(figsize=(8, 8), subplot_kw=dict(projection="polar"))
 
-    colors = {"Neural MLP": "#E74C3C", "CatBoost": "#2ECC71", "Pairwise LR": "#F39C12"}
+    colors = {"Neural MLP": "#E74C3C", "CatBoost": "#2ECC71"}
 
-    for name, label in models_display.items():
-        values = [metrics_map[name][m] for m in ["precision", "recall", "f1", "auc_roc", "ndcg@10"]]
-        values += values[:1]
-        ax.plot(angles, values, "o-", linewidth=2.5, label=label, color=colors[label], markersize=8)
-        ax.fill(angles, values, alpha=0.15, color=colors[label])
+    for label, values in metrics_map.items():
+        vals = [values["precision"], values["recall"], values["f1"], values["auc_roc"], values["ndcg@10"]]
+        vals += vals[:1]
+        ax.plot(angles, vals, "o-", linewidth=2.5, label=label, color=colors[label], markersize=8)
+        ax.fill(angles, vals, alpha=0.15, color=colors[label])
 
     ax.set_xticks(angles[:-1])
     ax.set_xticklabels(categories, fontsize=12)
@@ -135,7 +130,7 @@ def plot_model_radar(model_results):
     ax.set_yticks([0.2, 0.4, 0.6, 0.8, 1.0])
     ax.set_yticklabels(["0.2", "0.4", "0.6", "0.8", "1.0"], fontsize=10)
     ax.legend(loc="upper right", bbox_to_anchor=(1.3, 1.1), fontsize=12)
-    ax.set_title("Сравнение моделей", fontsize=16, fontweight="bold", pad=20)
+    ax.set_title("Сравнение моделей (классификация is_hired)", fontsize=16, fontweight="bold", pad=20)
 
     fig.tight_layout()
     fig.savefig(PLOTS_DIR / "02_model_radar.png", dpi=200, bbox_inches="tight")
@@ -428,6 +423,7 @@ def generate_html(model_results, cv_results, top30, eval_df, uplift_df, spearman
     <p><strong>Как работает:</strong> Берёт двоих кандидатов и отвечает: «кто лучше?» Не оценивает по отдельности — только сравнение пар.</p>
     <p><strong>Аналогия:</strong> Турнир по теннису. Не нужен абсолютный рейтинг — важно, кто кого побеждает.</p>
     <p><strong>Задача:</strong> Learning to Rank — ранжирование через попарные сравнения.</p>
+    <p><strong>⚠️ Важно:</strong> Pairwise отлично сравнивает пары (Accuracy = 100%), но плохо строит общий рейтинг из 2000 человек. Поэтому его метрики Precision/Recall/F1 = 1.000 относятся только к pairwise-задаче, а не к ранжированию.</p>
   </div>
 </div>
 
@@ -440,6 +436,10 @@ def generate_html(model_results, cv_results, top30, eval_df, uplift_df, spearman
 <!-- SECTION 5: Результаты -->
 <div class="card">
   <h2>5. Результаты моделей</h2>
+
+  <h3>5a. Метрики классификации (предсказание is_hired)</h3>
+  <p><em>Эти метрики показывают, насколько точно модель предсказывает, нанят кандидат или нет.</em></p>
+  <p><strong>⚠️ Pairwise LR:</strong> его метрики 1.000 относятся к задаче сравнения <strong>пар</strong> кандидатов, а не к предсказанию найма. Pairwise не предсказывает is_hired напрямую.</p>
   <table>
     <tr>
       <th>Метрика</th>
@@ -451,39 +451,67 @@ def generate_html(model_results, cv_results, top30, eval_df, uplift_df, spearman
       <td><strong>Precision</strong></td>
       <td>0.765</td>
       <td class="winner">0.765</td>
-      <td>1.000</td>
+      <td>1.000 <span style="color:#999;font-size:0.8em">(на парах)</span></td>
     </tr>
     <tr>
       <td><strong>Recall</strong></td>
       <td>0.851</td>
       <td class="winner">0.937</td>
-      <td>1.000</td>
+      <td>1.000 <span style="color:#999;font-size:0.8em">(на парах)</span></td>
     </tr>
     <tr>
       <td><strong>F1-Score</strong></td>
       <td>0.806</td>
       <td class="winner">0.842</td>
-      <td>1.000</td>
+      <td>1.000 <span style="color:#999;font-size:0.8em">(на парах)</span></td>
     </tr>
     <tr>
       <td><strong>AUC-ROC</strong></td>
       <td>0.600</td>
       <td class="winner">0.622</td>
-      <td>1.000</td>
+      <td>1.000 <span style="color:#999;font-size:0.8em">(на парах)</span></td>
     </tr>
+  </table>
+
+  <h3>5b. Метрики ранжирования (качество топ-списка) — <span style="color:#2ECC71">главное!</span></h3>
+  <p><em>Эти метрики показывают, насколько правильно модель расставляет кандидатов по местам. Это то, что реально нужно для найма.</em></p>
+  <table>
     <tr>
-      <td><strong>NDCG@30</strong></td>
+      <th>Метрика</th>
+      <th>Neural MLP</th>
+      <th class="winner">CatBoost ⭐</th>
+      <th>Pairwise LR</th>
+    </tr>
+    <tr class="winner">
+      <td><strong>NDCG@30</strong><br><span style="font-size:0.8em;color:#666">Качество ранжирования (1.0 = идеально)</span></td>
       <td>0.903</td>
-      <td class="winner">0.919</td>
+      <td class="winner"><strong>0.919</strong></td>
       <td>0.796</td>
     </tr>
     <tr>
-      <td><strong>Spearman vs формула</strong></td>
+      <td><strong>Spearman vs формула</strong><br><span style="font-size:0.8em;color:#666">Согласие с экспертной оценкой</span></td>
       <td>0.516</td>
-      <td class="winner">0.628</td>
+      <td class="winner"><strong>0.628</strong></td>
       <td>0.628</td>
     </tr>
+    <tr>
+      <td><strong>Uplift @ K=100</strong><br><span style="font-size:0.8em;color:#666">Насколько лучше формулы</span></td>
+      <td>+3.2%</td>
+      <td class="winner"><strong>+4.2%</strong></td>
+      <td>+4.2%</td>
+    </tr>
+    <tr>
+      <td><strong>Overlap с baseline @ K=30</strong><br><span style="font-size:0.8em;color:#666">Совпадение с формулой</span></td>
+      <td>27%</td>
+      <td class="winner"><strong>33%</strong></td>
+      <td>33%</td>
+    </tr>
   </table>
+
+  <div style="background:#FFF3CD; border-left:4px solid #F39C12; padding:15px; border-radius:0 8px 8px 0; margin-top:15px;">
+    <strong>⚠️ Почему Pairwise = 1.000, но CatBoost лучше?</strong><br>
+    Pairwise показывает 1.000 <strong>только на своей задаче</strong> — сравнение двоих кандидатов. Это как сказать «из двух футболистов я всегда выберу лучшего». Но когда просят составить рейтинг всех 2000 игроков — Pairwise справляется хуже всех (NDCG@30 = 0.796). CatBoost же сразу строит качественный рейтинг (NDCG@30 = 0.919).
+  </div>
 </div>
 
 <!-- SECTION 6: CV -->
