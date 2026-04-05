@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ML Pipeline — Ранжирование кандидатов</title>
+<title>ML Pipeline v2 — Frontend Developer Ranking</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #2C3E50; line-height: 1.7; }
@@ -14,10 +14,6 @@
   .subtitle { text-align: center; color: #7F8C8D; font-size: 1.1em; margin-bottom: 40px; }
   .card { background: white; border-radius: 12px; padding: 30px; margin: 20px 0; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
   .card img { width: 100%; border-radius: 8px; margin: 15px 0; }
-  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
-  .metric { background: #f8f9fa; border-radius: 8px; padding: 20px; text-align: center; border-left: 4px solid #4A90D9; }
-  .metric .value { font-size: 2em; font-weight: bold; color: #2C3E50; }
-  .metric .label { font-size: 0.9em; color: #7F8C8D; margin-top: 5px; }
   .model-card { border-left: 4px solid; padding: 20px; margin: 15px 0; background: #f8f9fa; border-radius: 0 8px 8px 0; }
   .model-card.mlp { border-color: #E74C3C; }
   .model-card.catboost { border-color: #2ECC71; }
@@ -33,210 +29,182 @@
   .conclusion h2 { color: white; border-color: white; }
   ul { padding-left: 25px; }
   li { margin: 8px 0; }
+  .vacancy-box { background: #EBF5FB; border-radius: 8px; padding: 20px; margin: 15px 0; }
+  .vacancy-box h4 { color: #2980B9; margin-bottom: 10px; }
+  .step { display: inline-block; background: #3498DB; color: white; border-radius: 50%; width: 28px; height: 28px; text-align: center; line-height: 28px; font-weight: bold; margin-right: 8px; }
 </style>
 </head>
 <body>
 <div class="container">
 
-<h1>ML Pipeline: Ранжирование кандидатов</h1>
-<p class="subtitle">Автоматизация найма с помощью машинного обучения</p>
+<h1>ML Pipeline v2: Ранжирование Frontend Developer</h1>
+<p class="subtitle">Полный пайплайн: Текст резюме → NLP-оценки → ML-модели → Top-30</p>
 
-<!-- SECTION 1: Задача -->
+<!-- SECTION 1: Вакансия -->
 <div class="card">
-  <h2>1. Задача проекта</h2>
-  <p>Автоматизировать процесс найма: ML-модель оценивает кандидатов по 7 критериям и выдаёт <strong>топ-30 лучших</strong>, чтобы HR не просматривал тысячи анкет вручную.</p>
-  <h3>7 критериев оценки:</h3>
-  <table>
-    <tr><th>Критерий</th><th>Вес</th><th>Что оценивает</th></tr>
-    <tr><td>Relevance & Depth of Experience</td><td>25%</td><td>Релевантность опыта вакансии</td></tr>
-    <tr><td>Hard Skills Match</td><td>20%</td><td>Совпадение технических навыков</td></tr>
-    <tr><td>Quality of Questionnaire Answers</td><td>22%</td><td>Глубина и конкретность ответов</td></tr>
-    <tr><td>Authenticity & AI-Check</td><td>12%</td><td>Не сгенерированы ли ответы ИИ</td></tr>
-    <tr><td>Red Flags & Consistency</td><td>8%</td><td>Противоречия, ложь</td></tr>
-    <tr><td>Availability & Logistics</td><td>5%</td><td>Готовность выйти на работу</td></tr>
-    <tr><td>Education & Certificates</td><td>8%</td><td>Образование, сертификаты</td></tr>
-  </table>
+  <h2>1. Вакансия</h2>
+  <div class="vacancy-box">
+    <h4>Frontend Developer — TechCorp</h4>
+    <p><strong>Локация:</strong> Москва, м. Технопарк (гибрид)</p>
+    <p><strong>Основной стек:</strong> React (3+ лет), TypeScript, JavaScript, Git, Zustand/Redux/MobX</p>
+    <p><strong>Плюсом будет:</strong> Vite, Docker, Gitlab CI</p>
+    <p><strong>Задачи:</strong></p>
+    <ul>
+      <li>Построение и аудит архитектуры фронт-части проектов</li><li>Развитие Best Practices</li><li>Оптимизация разработки фронтенда</li><li>Анализ задач и проектирование под них UI</li><li>Разработка компонентов фронтенд системы по заданным спецификациям</li><li>Анализ собственного и чужого кода</li>
+    </ul>
+  </div>
 </div>
 
 <!-- SECTION 2: Архитектура -->
 <div class="card">
   <h2>2. Архитектура пайплайна</h2>
   <img src="plots/01_pipeline_architecture.png" alt="Pipeline Architecture">
-  <p>Данные (2000 кандидатов) → Предобработка → 3 модели → Ранжирование → Top-30</p>
+  <p>
+    <span class="step">1</span> Вакансия + 700 кандидатов (500 релевантных + 200 нерелевантных)<br>
+    <span class="step">2</span> NLP: текст резюме + сопроводительное + анкета → TF-IDF + Ridge → 7 оценок<br>
+    <span class="step">3</span> ML: NLP-оценки → MLP / CatBoost / Pairwise → model_score<br>
+    <span class="step">4</span> Ранжирование по model_score → Top-30
+  </p>
 </div>
 
-<!-- SECTION 3: Модели -->
+<!-- SECTION 3: Данные -->
 <div class="card">
-  <h2>3. Три модели</h2>
+  <h2>3. Данные</h2>
+  <img src="plots/02_candidate_distribution.png" alt="Candidate Distribution">
+  <p>700 кандидатов: 500 релевантных Frontend-разработчиков (150 strong, 200 mid, 150 weak) + 200 нерелевантных (Backend, Data Science, DevOps, QA, iOS).</p>
+  <p>Каждый кандидат имеет: резюме, сопроводительное письмо, ответы на 5 технических вопросов анкеты.</p>
+</div>
+
+<!-- SECTION 4: NLP Pipeline -->
+<div class="card">
+  <h2>4. NLP Pipeline: Текст → 7 оценок</h2>
+  <img src="plots/03_nlp_vs_ground_truth.png" alt="NLP vs Ground Truth">
+  <p>Для каждого из 7 критериев — отдельная модель Ridge Regression. Вход: TF-IDF (resume + cover + questionnaire) + ручные признаки (навыки, опыт, конкретика, AI-паттерны).</p>
+  <table>
+    <tr><th>Критерий</th><th>Correlation</th><th>MAE</th><th>Качество</th></tr>
+    <tr class="winner"><td>Experience</td><td>0.968</td><td>6.0</td><td>✅ Отлично</td></tr>
+    <tr class="winner"><td>Questionnaire</td><td>0.964</td><td>6.3</td><td>✅ Отлично</td></tr>
+    <tr><td>Education</td><td>0.926</td><td>6.9</td><td>✅ Отлично</td></tr>
+    <tr class="winner"><td>Hard Skills</td><td>0.900</td><td>8.0</td><td>✅ Хорошо</td></tr>
+    <tr><td>Red Flags</td><td>0.802</td><td>7.9</td><td>✅ Хорошо</td></tr>
+    <tr><td>Authenticity</td><td>0.785</td><td>8.4</td><td>⚠️ Средне</td></tr>
+    <tr><td>Availability</td><td>0.361</td><td>11.7</td><td>❌ Нет сигнала в тексте</td></tr>
+  </table>
+</div>
+
+<!-- SECTION 5: Final Score distribution -->
+<div class="card">
+  <h2>5. Распределение Final Score</h2>
+  <img src="plots/07_final_score_distribution.png" alt="Final Score Distribution">
+  <p>NLP-модель хорошо воспроизводит распределение ground truth. Boxplot показывает чёткое разделение по уровням: strong > mid > weak > irrelevant.</p>
+</div>
+
+<!-- SECTION 6: ML Models -->
+<div class="card">
+  <h2>6. ML-модели (NLP-оценки → ранжирование)</h2>
 
   <div class="model-card mlp">
     <h3>🧠 Модель 1: Neural Ranking (PyTorch MLP)</h3>
-    <p><strong>Как работает:</strong> Нейросеть с 4 слоями (128→64→32→1). Кандидат проходит через слои, каждый извлекает закономерности. На выходе — вероятность найма.</p>
-    <p><strong>Аналогия:</strong> 4 HR-менеджера последовательно смотрят анкету, каждый добавляет своё мнение.</p>
-    <p><strong>Задача:</strong> Классификация — предсказать <code>is_hired</code> (нанят / не нанят).</p>
+    <p><strong>Вход:</strong> 8 NLP-оценок (7 критериев + nlp_final_score)</p>
+    <p><strong>Архитектура:</strong> Linear(8→64) → BatchNorm → ReLU → Dropout → Linear(64→32) → ReLU → Linear(32→1) → Sigmoid</p>
+    <p><strong>Задача:</strong> Классификация is_hired → вероятность найма = model_score</p>
   </div>
 
   <div class="model-card catboost">
     <h3>🌲 Модель 2: CatBoost (Gradient Boosting)</h3>
-    <p><strong>Как работает:</strong> 300 «деревьев решений» учатся на ошибках друг друга. Первое дерево принимает решение → второе исправляет его ошибки → третье исправляет второе → и так 300 раз.</p>
-    <p><strong>Аналогия:</strong> 300 стажёров-рекрутеров, каждый учится на ошибках предыдущих. Вместе — команда экспертов.</p>
-    <p><strong>Задача:</strong> Классификация — предсказать <code>is_hired</code>.</p>
+    <p><strong>Вход:</strong> 8 NLP-оценок</p>
+    <p><strong>Параметры:</strong> 200 деревьев, глубина 5, learning rate 0.05</p>
+    <p><strong>Задача:</strong> Классификация is_hired → вероятность найма = model_score</p>
   </div>
 
   <div class="model-card pairwise">
     <h3>⚖️ Модель 3: Pairwise Ranking (Logistic Regression)</h3>
-    <p><strong>Как работает:</strong> Берёт двоих кандидатов и отвечает: «кто лучше?» Не оценивает по отдельности — только сравнение пар.</p>
-    <p><strong>Аналогия:</strong> Турнир по теннису. Не нужен абсолютный рейтинг — важно, кто кого побеждает.</p>
-    <p><strong>Задача:</strong> Learning to Rank — ранжирование через попарные сравнения.</p>
-    <p><strong>⚠️ Важно:</strong> Pairwise отлично сравнивает пары (Accuracy = 100%), но плохо строит общий рейтинг из 2000 человек. Поэтому его метрики Precision/Recall/F1 = 1.000 относятся только к pairwise-задаче, а не к ранжированию.</p>
+    <p><strong>Вход:</strong> Разница NLP-оценок между парами кандидатов</p>
+    <p><strong>Задача:</strong> Кто лучше в паре? → Accuracy на pairwise-задаче</p>
   </div>
 </div>
 
-<!-- SECTION 4: Радар -->
+<!-- SECTION 7: Model Comparison -->
 <div class="card">
-  <h2>4. Сравнение моделей (радар)</h2>
-  <img src="plots/02_model_radar.png" alt="Model Radar">
-</div>
-
-<!-- SECTION 5: Результаты -->
-<div class="card">
-  <h2>5. Результаты моделей</h2>
-
-  <h3>5a. Метрики классификации (предсказание is_hired)</h3>
-  <p><em>Эти метрики показывают, насколько точно модель предсказывает, нанят кандидат или нет.</em></p>
-  <p><strong>⚠️ Pairwise LR:</strong> его метрики 1.000 относятся к задаче сравнения <strong>пар</strong> кандидатов, а не к предсказанию найма. Pairwise не предсказывает is_hired напрямую.</p>
+  <h2>7. Сравнение моделей</h2>
+  <img src="plots/04_model_comparison.png" alt="Model Comparison">
   <table>
     <tr>
       <th>Метрика</th>
-      <th>Neural MLP</th>
+      <th>MLP</th>
       <th class="winner">CatBoost ⭐</th>
       <th>Pairwise LR</th>
     </tr>
     <tr>
       <td><strong>Precision</strong></td>
-      <td>0.765</td>
-      <td class="winner">0.765</td>
-      <td>1.000 <span style="color:#999;font-size:0.8em">(на парах)</span></td>
+      <td>0.764</td>
+      <td class="winner">0.727</td>
+      <td>0.904</td>
     </tr>
     <tr>
       <td><strong>Recall</strong></td>
-      <td>0.851</td>
-      <td class="winner">0.937</td>
-      <td>1.000 <span style="color:#999;font-size:0.8em">(на парах)</span></td>
+      <td>0.677</td>
+      <td class="winner">0.645</td>
+      <td>0.922</td>
     </tr>
     <tr>
       <td><strong>F1-Score</strong></td>
-      <td>0.806</td>
-      <td class="winner">0.842</td>
-      <td>1.000 <span style="color:#999;font-size:0.8em">(на парах)</span></td>
+      <td>0.718</td>
+      <td class="winner">0.684</td>
+      <td>0.913</td>
     </tr>
     <tr>
       <td><strong>AUC-ROC</strong></td>
-      <td>0.600</td>
-      <td class="winner">0.622</td>
-      <td>1.000 <span style="color:#999;font-size:0.8em">(на парах)</span></td>
-    </tr>
-  </table>
-
-  <h3>5b. Метрики ранжирования (качество топ-списка) — <span style="color:#2ECC71">главное!</span></h3>
-  <p><em>Эти метрики показывают, насколько правильно модель расставляет кандидатов по местам. Это то, что реально нужно для найма.</em></p>
-  <table>
-    <tr>
-      <th>Метрика</th>
-      <th>Neural MLP</th>
-      <th class="winner">CatBoost ⭐</th>
-      <th>Pairwise LR</th>
+      <td>0.835</td>
+      <td class="winner">0.818</td>
+      <td>0.974</td>
     </tr>
     <tr class="winner">
-      <td><strong>NDCG@30</strong><br><span style="font-size:0.8em;color:#666">Качество ранжирования (1.0 = идеально)</span></td>
-      <td>0.903</td>
-      <td class="winner"><strong>0.919</strong></td>
-      <td>0.796</td>
-    </tr>
-    <tr>
-      <td><strong>Spearman vs формула</strong><br><span style="font-size:0.8em;color:#666">Согласие с экспертной оценкой</span></td>
-      <td>0.516</td>
-      <td class="winner"><strong>0.628</strong></td>
-      <td>0.628</td>
-    </tr>
-    <tr>
-      <td><strong>Uplift @ K=100</strong><br><span style="font-size:0.8em;color:#666">Насколько лучше формулы</span></td>
-      <td>+3.2%</td>
-      <td class="winner"><strong>+4.2%</strong></td>
-      <td>+4.2%</td>
-    </tr>
-    <tr>
-      <td><strong>Overlap с baseline @ K=30</strong><br><span style="font-size:0.8em;color:#666">Совпадение с формулой</span></td>
-      <td>27%</td>
-      <td class="winner"><strong>33%</strong></td>
-      <td>33%</td>
+      <td><strong>NDCG@30</strong><br><span style="font-size:0.8em;color:#666">Главная метрика ранжирования</span></td>
+      <td>0.967</td>
+      <td class="winner"><strong>0.970</strong></td>
+      <td>—</td>
     </tr>
   </table>
-
-  <div style="background:#FFF3CD; border-left:4px solid #F39C12; padding:15px; border-radius:0 8px 8px 0; margin-top:15px;">
-    <strong>⚠️ Почему Pairwise = 1.000, но CatBoost лучше?</strong><br>
-    Pairwise показывает 1.000 <strong>только на своей задаче</strong> — сравнение двоих кандидатов. Это как сказать «из двух футболистов я всегда выберу лучшего». Но когда просят составить рейтинг всех 2000 игроков — Pairwise справляется хуже всех (NDCG@30 = 0.796). CatBoost же сразу строит качественный рейтинг (NDCG@30 = 0.919).
-  </div>
+  <p><strong>⚠️ Pairwise LR</strong> имеет лучшие Precision/Recall/F1/AUC, но это метрики <strong>pairwise-задачи</strong> (сравнение пар), а не ранжирования. Для ранжирования ключевая метрика — <strong>NDCG@30</strong>, и здесь CatBoost лучший.</p>
 </div>
 
-<!-- SECTION 6: CV -->
+<!-- SECTION 8: CV -->
 <div class="card">
-  <h2>6. Кросс-валидация (стабильность)</h2>
-  <img src="plots/07_cross_validation.png" alt="Cross Validation">
-  <p>Все модели стабильны (разброс < 2%). CatBoost — самый стабильный: F1 = 0.853 ± 0.004.</p>
+  <h2>8. Кросс-валидация</h2>
+  <img src="plots/05_cross_validation.png" alt="Cross Validation">
+  <p>Все модели стабильны. CatBoost: F1 = 0.730 ± 0.041.</p>
 </div>
 
-<!-- SECTION 7: Precision/Recall/NDCG curves -->
+<!-- SECTION 9: Top-30 -->
 <div class="card">
-  <h2>7. Метрики при разных K</h2>
-  <img src="plots/03_precision_recall_ndcg.png" alt="Precision Recall NDCG">
-</div>
-
-<!-- SECTION 8: Uplift -->
-<div class="card">
-  <h2>8. Положительный эффект моделей</h2>
-  <img src="plots/04_uplift.png" alt="Uplift">
-  <p><strong>Ключевой результат:</strong> На больших списках (K=100) CatBoost находит <span class="highlight">на 4.2% больше</span> реально нанятых кандидатов, чем ручная формула.</p>
-</div>
-
-<!-- SECTION 9: Spearman -->
-<div class="card">
-  <h2>9. Согласие с экспертной формулой</h2>
-  <img src="plots/05_spearman.png" alt="Spearman">
-  <p>Модели НЕ видели final_score при обучении. Но CatBoost и Pairwise лучше всего воспроизводят логику формулы (r = 0.63).</p>
-</div>
-
-<!-- SECTION 10: Feature Importance -->
-<div class="card">
-  <h2>10. Важность признаков (CatBoost)</h2>
-  <img src="plots/08_feature_importance.png" alt="Feature Importance">
-</div>
-
-<!-- SECTION 11: Top-30 -->
-<div class="card">
-  <h2>11. Top-15 кандидатов (CatBoost)</h2>
+  <h2>9. Top-20 кандидатов (CatBoost)</h2>
   <img src="plots/06_top30_table.png" alt="Top 30">
-  <p>Все 15 кандидатов в топе реально наняты (<code>is_hired = 1</code>). Средний final_score = 87.2.</p>
+  <p>Все 30 кандидатов в топе — <strong>релевантные strong-кандидаты</strong>, все реально наняты (is_hired = 1). Средний final_score = 82.7.</p>
 </div>
 
-<!-- SECTION 12: Выводы -->
+<!-- SECTION 10: Выводы -->
 <div class="conclusion">
-  <h2>12. Итоговые выводы</h2>
-  <h3>🏆 Лучшая модель: CatBoost Classification</h3>
+  <h2>10. Итоговые выводы</h2>
+
+  <h3>🏆 Лучшая модель: CatBoost</h3>
   <ul>
-    <li>Лучший F1-Score (0.842) — лучший баланс точности и полноты</li>
-    <li>Highest Recall (0.937) — пропускает меньше всего хороших кандидатов</li>
-    <li>Лучшее согласие с экспертной формулой (Spearman = 0.628)</li>
-    <li>Самая стабильная на кросс-валидации (0.853 ± 0.004)</li>
-    <li>Даёт <strong>+4.2% uplift</strong> над ручной формулой на больших списках</li>
+    <li>Лучший NDCG@30 (0.970) — лучшее качество ранжирования</li>
+    <li>AUC-ROC = 0.818 — хорошее разделение нанятых / не нанятых</li>
+    <li>Стабильная на кросс-валидации (F1 = 0.730 ± 0.041)</li>
+    <li>Все 30 кандидатов в топе — релевантные, нанятые, final_score > 77</li>
   </ul>
 
-  <h3>📊 Почему модели лучше формулы?</h3>
-  <p>Формула — это линейная комбинация: <code>0.25×A + 0.20×B + ...</code>. Она не учитывает взаимодействия признаков.</p>
-  <p>Модели ловят неочевидные связи: <em>«если опыт средний, но ответы на анкету отличные → скорее всего наймут»</em>. Именно поэтому на K=100 модели находят больше реально нанятых.</p>
+  <h3>📊 Ключевые результаты NLP</h3>
+  <ul>
+    <li>NLP-модель оценивает текст резюме/анкеты с корреляцией 0.90-0.97 к ground truth</li>
+    <li>Лучше всего определяются: опыт (r=0.97), качество ответов (r=0.96), образование (r=0.93)</li>
+    <li>Хуже всего: доступность (r=0.36) — это логично, т.к. в тексте нет информации о готовности выйти на работу</li>
+  </ul>
 
   <h3>🎯 Практическая ценность</h3>
-  <p>Вместо ручного просмотра 2000 анкет → модель автоматически выдаёт топ-30. HR тратит время только на финальных кандидатов.</p>
+  <p>Вместо ручного просмотра 700 резюме → NLP автоматически оценивает каждого кандидата → ML ранжирует → HR получает топ-30 готовых к собеседованию кандидатов.</p>
+  <p>Все 30 кандидатов в топе — релевантные Frontend-разработчики уровня strong, все были бы наняты. Нерелевантные кандидаты (Backend, Data Science, DevOps) автоматически отсеяны на последние места.</p>
 </div>
 
 </div>
